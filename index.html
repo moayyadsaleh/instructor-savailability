@@ -3,31 +3,60 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Instructor Availability App</title>
+    <title>Instructor Availability Manager</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
-    <!-- Firebase SDK -->
-    <script type="module" src="firebase-config.js"></script>
   </head>
   <body>
-    <h1>Instructor Availability</h1>
+    <div class="container">
+      <h1>Instructor Availability Manager</h1>
 
-    <!-- Availability Logging Form -->
-    <form id="availability-form">
-      <label for="name">Instructor Name:</label>
-      <input type="text" id="name" required />
+      <div class="form-section">
+        <h2>Add Availability</h2>
 
-      <label for="date">Available Date:</label>
-      <input type="date" id="date" required />
+        <label for="recurrence">Recurrence:</label>
+        <select id="recurrence">
+          <option value="" disabled selected>Select Recurrence</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
 
-      <label for="time">Available Time:</label>
-      <input type="time" id="time" required />
+        <input
+          type="text"
+          id="instructor-name"
+          placeholder="Instructor Name"
+          required
+        />
 
-      <button type="submit">Log Availability</button>
-    </form>
+        <label for="availability-start">Start Date & Time:</label>
+        <input
+          type="datetime-local"
+          id="availability-start"
+          step="3600"
+          required
+        />
 
-    <h2>Availability Schedule</h2>
-    <ul id="availability-list"></ul>
+        <label for="availability-end">End Date & Time:</label>
+        <input
+          type="datetime-local"
+          id="availability-end"
+          step="3600"
+          required
+        />
 
+        <button id="add-availability-btn">Add Availability</button>
+      </div>
+
+      <div id="calendar"></div>
+      <div id="hover-details" class="hover-popup"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script type="module" src="firebase-config.js"></script>
     <script type="module" src="script.js"></script>
   </body>
 </html>

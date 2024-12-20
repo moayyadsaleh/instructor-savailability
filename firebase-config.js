@@ -1,17 +1,27 @@
-// Import the necessary Firebase libraries
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+// firebase-config.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-// Your Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCDS0kxH6_EIGyiGhcXz0fCImGTToMf9DY",
+  authDomain: "instructor-s-availability.firebaseapp.com",
+  projectId: "instructor-s-availability",
+  storageBucket: "instructor-s-availability.firebasestorage.app",
+  messagingSenderId: "97145204107",
+  appId: "1:97145204107:web:a216a526b4d780658bd38e",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const db = getFirestore(app);
+
+export { db, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot };

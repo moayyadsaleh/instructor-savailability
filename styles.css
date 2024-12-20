@@ -1,9 +1,21 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
+  background: url("https://source.unsplash.com/random/1920x1080") no-repeat
+    center center fixed;
+  background-size: cover;
+  color: #fff;
   margin: 0;
   padding: 20px;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 h1,
@@ -11,49 +23,140 @@ h2 {
   text-align: center;
 }
 
-form {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 400px;
-  margin: 20px auto;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-label {
-  display: block;
-  margin-top: 10px;
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 input,
 button {
-  width: 100%;
   padding: 10px;
-  margin-top: 5px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
 }
 
 button {
-  background-color: #007aff;
-  color: white;
-  border: none;
-  border-radius: 5px;
+  background: rgba(0, 123, 255, 0.7);
+  color: #fff;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #005bb5;
+  background: rgba(0, 123, 255, 1);
+}
+/* Style the calendar container */
+#calendar {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 10px;
+  margin-top: 20px;
+}
+/* Calendar header styling for days of the week */
+/* Full-width, responsive calendar container */
+#calendar {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 100%; /* Ensure it stretches to the full width of its container */
+  height: 100vh; /* Make it occupy the full viewport height */
+  box-sizing: border-box; /* Include padding and borders in width calculations */
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+/* Style the full date under each day */
+.fc-col-header-cell .full-date {
+  font-size: 1rem;
+  color: black;
+  margin-top: 5px;
 }
 
-li {
-  background: white;
-  margin: 10px auto;
+/* Increase day header and cell size for readability */
+.fc-col-header-cell {
   padding: 15px;
+  font-size: 1.2rem; /* Larger day names */
+  color: black;
+}
+
+/* Calendar event text color */
+.fc-event {
+  color: black !important;
+}
+
+/* Header toolbar styling */
+.fc-header-toolbar {
+  margin-bottom: 20px;
+  color: black;
+  text-align: center;
+}
+
+/* Calendar day cell styling */
+.fc-daygrid-day {
+  background: rgba(255, 255, 255, 0.1);
+  color: black;
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border for clarity */
+}
+
+/* Ensure dates are properly spaced */
+.fc-col-header-cell div {
+  display: block;
+  text-align: center;
+}
+
+/* Make the calendar height flexible */
+.fc {
+  height: 100%;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  #calendar {
+    padding: 10px;
+    height: 90vh;
+  }
+
+  .fc-col-header-cell {
+    font-size: 1rem;
+    padding: 10px;
+  }
+
+  .fc-header-toolbar {
+    font-size: 0.9rem;
+  }
+}
+/* Tooltip container styling */
+.fc-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Hide tooltip by default */
+.fc-tooltip.hidden {
+  display: none;
+}
+/* Tooltip styling for event hover details */
+.hover-popup {
+  position: absolute;
+  display: none;
+  z-index: 1000;
+  background-color: #fff;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  max-width: 400px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 0.9em;
+  color: #333;
+  max-width: 250px;
+  word-wrap: break-word;
 }
