@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Instructor Availability Manager</title>
+    <title>Instructor Teaching Schedule Manager</title>
     <link
       href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
       rel="stylesheet"
@@ -65,7 +65,7 @@
   <body>
     <div class="container">
       <h1>
-        <i class="fas fa-calendar-alt"></i> Instructor Availability Manager
+        <i class="fas fa-calendar-alt"></i> Instructor Teaching Schedule Manager
       </h1>
 
       <button id="toggle-instructions-btn" class="toggle-btn">
@@ -76,47 +76,41 @@
         <h2><i class="fas fa-book"></i> How to Use</h2>
         <p>
           1.
-          <strong
-            ><i class="fas fa-plus-circle"></i> Add Your Availability:</strong
-          >
-          Enter your name, choose a start and end date/time, and click
-          <strong>"Add Availability"</strong>. Your availability will show up on
-          the calendar right away.
+          <strong><i class="fas fa-plus-circle"></i> Add a Class:</strong>
+          Enter the instructor's name, the class name, and select a start and
+          end date/time. Click
+          <strong>"Add Class"</strong>. The class schedule will appear on the
+          calendar immediately.
         </p>
         <p>
-          2. <strong><i class="fas fa-eye"></i> See the Details:</strong> Hover
-          over any availability slot to see more details in a pop-up.
+          2. <strong><i class="fas fa-eye"></i> View Details:</strong> Hover
+          over a class slot to see more details in a pop-up.
         </p>
         <p>
-          3. <strong><i class="fas fa-edit"></i> Make Changes:</strong> Need to
-          delete something? Just click the availability slot and confirm to
-          remove it.
+          3. <strong><i class="fas fa-trash"></i> Delete a Class:</strong> Click
+          on a class slot and confirm the deletion to remove it from the
+          calendar.
         </p>
       </div>
 
       <div class="form-section">
-        <h2><i class="fas fa-user-plus"></i> Add Availability</h2>
-
-        <input
-          type="text"
-          id="recurrence"
-          placeholder="Recurrence (e.g., Weekly, Daily)"
-        />
+        <h2><i class="fas fa-user-plus"></i> Add Class</h2>
 
         <input type="text" id="instructor-name" placeholder="Instructor Name" />
 
-        <label for="availability-start">
+        <input type="text" id="class-name" placeholder="Class Name" />
+        <label for="class-start">
           <i class="fas fa-calendar-plus"></i> Start Date & Time:
         </label>
-        <input type="datetime-local" id="availability-start" step="3600" />
+        <input type="datetime-local" id="class-start" step="60" />
 
-        <label for="availability-end">
+        <label for="class-end">
           <i class="fas fa-calendar-minus"></i> End Date & Time:
         </label>
-        <input type="datetime-local" id="availability-end" step="3600" />
+        <input type="datetime-local" id="class-end" step="60" />
 
-        <button id="add-availability-btn">
-          <i class="fas fa-check-circle"></i> Add Availability
+        <button id="add-class-btn">
+          <i class="fas fa-check-circle"></i> Add Class
         </button>
       </div>
 
@@ -155,6 +149,17 @@
               '<i class="fas fa-info-circle"></i> Show Instructions';
           }
         });
+    </script>
+    <script>
+      // Submit form when pressing Enter in any input field
+      document.querySelectorAll(".form-section input").forEach((input) => {
+        input.addEventListener("keypress", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("add-class-btn").click();
+          }
+        });
+      });
     </script>
   </body>
 </html>

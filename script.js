@@ -33,20 +33,24 @@ document.addEventListener("DOMContentLoaded", () => {
     events: [],
 
     eventClick: async (info) => {
-      if (confirm(`Delete availability for ${info.event.title}?`)) {
-        await deleteDoc(doc(db, "availability", info.event.id));
+      if (confirm(`Delete class for ${info.event.title}?`)) {
+        await deleteDoc(doc(db, "teaching-schedule", info.event.id));
       }
     },
 
     eventMouseEnter: (info) => {
       const { title, extendedProps } = info.event;
-      const { startInput, endInput } = extendedProps;
+      const { startInput, endInput, className } = extendedProps;
 
       hoverDetailsEl.innerHTML = `
             <div style="padding: 10px; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; max-width: 250px;">
               <strong style="font-size: 1.1em; display: block; margin-bottom: 5px;">${title}</strong>
               <div style="margin-bottom: 5px;">
-                <strong>Available From:</strong><br>
+                <strong>Class:</strong><br>
+                ${className}
+              </div>
+              <div>
+                <strong>From:</strong><br>
                 ${formatInputDateTime(startInput)}
               </div>
               <div>
@@ -58,11 +62,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       hoverDetailsEl.style.display = "block";
 
-      // Get the cursor position relative to the viewport
-      let top = info.jsEvent.clientY + 15; // Slightly below the cursor
-      let left = info.jsEvent.clientX + 15; // Slightly to the right of the cursor
+      let top = info.jsEvent.clientY + 15;
+      let left = info.jsEvent.clientX + 15;
 
-      // Ensure the tooltip does not go outside the viewport boundaries
       const tooltipHeight = hoverDetailsEl.offsetHeight;
       const tooltipWidth = hoverDetailsEl.offsetWidth;
 
@@ -73,8 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         left = window.innerWidth - tooltipWidth - 10;
       }
 
-      // Apply the calculated position
-      hoverDetailsEl.style.position = "fixed"; // Use fixed positioning for accurate placement
+      hoverDetailsEl.style.position = "fixed";
       hoverDetailsEl.style.top = `${top}px`;
       hoverDetailsEl.style.left = `${left}px`;
     },
@@ -89,49 +90,54 @@ document.addEventListener("DOMContentLoaded", () => {
   calendar.render();
 
   // Listen for database changes and update events
-  onSnapshot(collection(db, "availability"), (snapshot) => {
+  onSnapshot(collection(db, "teaching-schedule"), (snapshot) => {
     calendar.removeAllEvents();
     snapshot.forEach((doc) => {
       const data = doc.data();
+
       calendar.addEvent({
         id: doc.id,
         title: data.instructor,
         start: data.start,
         end: data.end,
+        color: instructorColors[data.instructor] || getRandomColor(),
         extendedProps: {
-          startInput: data.startInput,
-          endInput: data.endInput,
+          className: data.className, // Include class name in extended properties
+          startInput: data.start,
+          endInput: data.end,
         },
       });
     });
   });
 
+  // Adding teaching hours (classes)
   document
-    .getElementById("add-availability-btn")
+    .getElementById("add-class-btn")
     .addEventListener("click", async () => {
       const instructorName = document.getElementById("instructor-name").value;
-      const start = document.getElementById("availability-start").value;
-      const end = document.getElementById("availability-end").value;
+      const className = document.getElementById("class-name").value;
+      const start = document.getElementById("class-start").value;
+      const end = document.getElementById("class-end").value;
 
-      // Ensure all fields are filled out and start time is before end time
-      if (instructorName && start && end) {
+      if (instructorName && className && start && end) {
         if (new Date(start) >= new Date(end)) {
           alert("End time must be after start time.");
           return;
         }
 
         try {
-          await addDoc(collection(db, "availability"), {
+          await addDoc(collection(db, "teaching-schedule"), {
             instructor: instructorName,
+            className: className,
             start: start,
             end: end,
             startInput: start,
             endInput: end,
           });
-          alert("Availability added successfully!");
+          alert("Class added successfully!");
         } catch (error) {
-          console.error("Error adding availability:", error);
-          alert("Failed to add availability.");
+          console.error("Error adding class:", error);
+          alert("Failed to add class.");
         }
       } else {
         alert("Please fill out all fields.");
@@ -160,9 +166,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function formatInputDateTime(input) {
     const parsedDate = new Date(input);
-    if (isNaN(parsedDate)) return input; // Fallback to raw input if parsing fails
+    if (isNaN(parsedDate)) return input;
 
-    // Format to mm/dd/yy, hh:mm AM/PM
     const datePart = parsedDate.toLocaleDateString("en-US", {
       year: "2-digit",
       month: "2-digit",
@@ -175,5 +180,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     return `${datePart}, ${timePart}`;
+  }
+
+  const instructorColors = {};
+
+  function getRandomColor() {
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }
 });
