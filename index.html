@@ -8,47 +8,116 @@
       href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .how-it-works {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        color: #2c3e50;
+        max-width: 600px;
+        margin: 0 auto 30px;
+        font-size: 1rem;
+        display: none; /* Initially hidden */
+      }
+
+      .how-it-works h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #2c3e50;
+      }
+
+      .how-it-works p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+
+      .how-it-works strong {
+        color: #2980b9;
+      }
+
+      .toggle-btn {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        font-size: 1rem;
+        background-color: #2980b9;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .toggle-btn:hover {
+        background-color: #1f6ea8;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
-      <h1>Instructor Availability Manager</h1>
+      <h1>
+        <i class="fas fa-calendar-alt"></i> Instructor Availability Manager
+      </h1>
+
+      <button id="toggle-instructions-btn" class="toggle-btn">
+        <i class="fas fa-info-circle"></i> Show Instructions
+      </button>
+
+      <div class="how-it-works" id="instructions">
+        <h2><i class="fas fa-book"></i> How to Use</h2>
+        <p>
+          1.
+          <strong
+            ><i class="fas fa-plus-circle"></i> Add Your Availability:</strong
+          >
+          Enter your name, choose a start and end date/time, and click
+          <strong>"Add Availability"</strong>. Your availability will show up on
+          the calendar right away.
+        </p>
+        <p>
+          2. <strong><i class="fas fa-eye"></i> See the Details:</strong> Hover
+          over any availability slot to see more details in a pop-up.
+        </p>
+        <p>
+          3. <strong><i class="fas fa-edit"></i> Make Changes:</strong> Need to
+          delete something? Just click the availability slot and confirm to
+          remove it.
+        </p>
+      </div>
 
       <div class="form-section">
-        <h2>Add Availability</h2>
-
-        <label for="recurrence">Recurrence:</label>
-        <select id="recurrence">
-          <option value="" disabled selected>Select Recurrence</option>
-          <option value="daily">Daily</option>
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-        </select>
+        <h2><i class="fas fa-user-plus"></i> Add Availability</h2>
 
         <input
           type="text"
-          id="instructor-name"
-          placeholder="Instructor Name"
-          required
+          id="recurrence"
+          placeholder="Recurrence (e.g., Weekly, Daily)"
         />
 
-        <label for="availability-start">Start Date & Time:</label>
-        <input
-          type="datetime-local"
-          id="availability-start"
-          step="3600"
-          required
-        />
+        <input type="text" id="instructor-name" placeholder="Instructor Name" />
 
-        <label for="availability-end">End Date & Time:</label>
-        <input
-          type="datetime-local"
-          id="availability-end"
-          step="3600"
-          required
-        />
+        <label for="availability-start">
+          <i class="fas fa-calendar-plus"></i> Start Date & Time:
+        </label>
+        <input type="datetime-local" id="availability-start" step="3600" />
 
-        <button id="add-availability-btn">Add Availability</button>
+        <label for="availability-end">
+          <i class="fas fa-calendar-minus"></i> End Date & Time:
+        </label>
+        <input type="datetime-local" id="availability-end" step="3600" />
+
+        <button id="add-availability-btn">
+          <i class="fas fa-check-circle"></i> Add Availability
+        </button>
       </div>
 
       <div id="calendar"></div>
@@ -58,5 +127,27 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="script.js"></script>
+
+    <script>
+      document
+        .getElementById("toggle-instructions-btn")
+        .addEventListener("click", () => {
+          const instructions = document.getElementById("instructions");
+          const toggleBtn = document.getElementById("toggle-instructions-btn");
+
+          if (
+            instructions.style.display === "none" ||
+            instructions.style.display === ""
+          ) {
+            instructions.style.display = "block";
+            toggleBtn.innerHTML =
+              '<i class="fas fa-info-circle"></i> Hide Instructions';
+          } else {
+            instructions.style.display = "none";
+            toggleBtn.innerHTML =
+              '<i class="fas fa-info-circle"></i> Show Instructions';
+          }
+        });
+    </script>
   </body>
 </html>
