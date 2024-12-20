@@ -51,18 +51,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       hoverDetailsEl.style.display = "block";
 
-      // Position tooltip near the cursor
-      let top = info.jsEvent.clientY + 10;
-      let left = info.jsEvent.clientX + 10;
+      // Get the cursor position relative to the viewport
+      let top = info.jsEvent.clientY + 15; // Slightly below the cursor
+      let left = info.jsEvent.clientX + 15; // Slightly to the right of the cursor
 
-      // Adjust for viewport boundaries
-      if (top + hoverDetailsEl.offsetHeight > window.innerHeight) {
-        top = window.innerHeight - hoverDetailsEl.offsetHeight - 10;
+      // Ensure the tooltip does not go outside the viewport boundaries
+      const tooltipHeight = hoverDetailsEl.offsetHeight;
+      const tooltipWidth = hoverDetailsEl.offsetWidth;
+
+      if (top + tooltipHeight > window.innerHeight) {
+        top = window.innerHeight - tooltipHeight - 10;
       }
-      if (left + hoverDetailsEl.offsetWidth > window.innerWidth) {
-        left = window.innerWidth - hoverDetailsEl.offsetWidth - 10;
+      if (left + tooltipWidth > window.innerWidth) {
+        left = window.innerWidth - tooltipWidth - 10;
       }
 
+      // Apply the calculated position
+      hoverDetailsEl.style.position = "fixed"; // Use fixed positioning for accurate placement
       hoverDetailsEl.style.top = `${top}px`;
       hoverDetailsEl.style.left = `${left}px`;
     },
@@ -132,9 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const dateStr = cell.getAttribute("data-date");
       if (dateStr) {
         const fullDate = new Date(dateStr).toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit",
         });
         if (!cell.querySelector(".full-date")) {
           const dateElement = document.createElement("div");
@@ -146,19 +151,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Format the input date-time to a readable format
   function formatInputDateTime(input) {
     const parsedDate = new Date(input);
     if (isNaN(parsedDate)) return input; // Fallback to raw input if parsing fails
 
-    return parsedDate.toLocaleString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+    // Format to mm/dd/yy, hh:mm AM/PM
+    const datePart = parsedDate.toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    const timePart = parsedDate.toLocaleTimeString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
     });
+
+    return `${datePart}, ${timePart}`;
   }
 });

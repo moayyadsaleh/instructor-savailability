@@ -1,162 +1,160 @@
+/* General reset and font */
 body {
-  font-family: Arial, sans-serif;
-  background: url("https://source.unsplash.com/random/1920x1080") no-repeat
-    center center fixed;
-  background-size: cover;
-  color: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f3f4f6;
+  color: #333;
   margin: 0;
-  padding: 20px;
+  padding: 0;
 }
 
+/* Container for the entire app */
 .container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-h1,
-h2 {
+/* Heading styles */
+h1 {
+  font-size: 2rem;
+  color: #0078d4;
   text-align: center;
 }
 
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #005a9e;
+}
+
+/* Form section styles */
 .form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+label {
+  display: block;
+  margin: 0.5rem 0 0.2rem;
+  font-weight: 600;
 }
 
 input,
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
+select {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   font-size: 1rem;
+  margin-bottom: 1rem;
 }
 
+/* Button styling */
 button {
-  background: rgba(0, 123, 255, 0.7);
+  background-color: #0078d4;
   color: #fff;
+  padding: 0.7rem 1.5rem;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
 }
 
 button:hover {
-  background: rgba(0, 123, 255, 1);
+  background-color: #005a9e;
 }
-/* Style the calendar container */
+
+/* Calendar container styles */
 #calendar {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 10px;
-  margin-top: 20px;
-}
-/* Calendar header styling for days of the week */
-/* Full-width, responsive calendar container */
-#calendar {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 20px;
-  margin: 20px auto;
-  width: 100%;
-  max-width: 100%; /* Ensure it stretches to the full width of its container */
-  height: 100vh; /* Make it occupy the full viewport height */
-  box-sizing: border-box; /* Include padding and borders in width calculations */
+  margin-top: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Style the full date under each day */
-.fc-col-header-cell .full-date {
-  font-size: 1rem;
-  color: black;
-  margin-top: 5px;
-}
-
-/* Increase day header and cell size for readability */
-.fc-col-header-cell {
-  padding: 15px;
-  font-size: 1.2rem; /* Larger day names */
-  color: black;
-}
-
-/* Calendar event text color */
-.fc-event {
-  color: black !important;
-}
-
-/* Header toolbar styling */
-.fc-header-toolbar {
-  margin-bottom: 20px;
-  color: black;
-  text-align: center;
-}
-
-/* Calendar day cell styling */
-.fc-daygrid-day {
-  background: rgba(255, 255, 255, 0.1);
-  color: black;
-  border: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border for clarity */
-}
-
-/* Ensure dates are properly spaced */
-.fc-col-header-cell div {
-  display: block;
-  text-align: center;
-}
-
-/* Make the calendar height flexible */
-.fc {
-  height: 100%;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-  #calendar {
-    padding: 10px;
-    height: 90vh;
-  }
-
-  .fc-col-header-cell {
-    font-size: 1rem;
-    padding: 10px;
-  }
-
-  .fc-header-toolbar {
-    font-size: 0.9rem;
-  }
-}
-/* Tooltip container styling */
-.fc-tooltip {
+/* Hover details popup */
+.hover-popup {
   position: absolute;
-  background: rgba(0, 0, 0, 0.8);
+  background: #fff;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+/* FullCalendar custom styling */
+.fc-toolbar-title {
+  font-size: 1.5rem;
+  color: #0078d4;
+}
+
+.fc-daygrid-day-number {
+  color: #333;
+}
+
+.fc-event {
+  background-color: #0078d4;
+  border-color: #005a9e;
   color: #fff;
-  padding: 10px;
-  border-radius: 5px;
+  border-radius: 4px;
+}
+
+.fc-button-primary {
+  background-color: #0078d4;
+  border: none;
+}
+
+.fc-button-primary:hover {
+  background-color: #005a9e;
+}
+/* Tooltip styling for event hover details */
+.hover-popup {
+  position: fixed;
+  background: #fff;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  pointer-events: none; /* Prevent the tooltip from interfering with mouse events */
+  z-index: 1000; /* Keep the tooltip on top of other elements */
+  font-size: 0.9rem;
+}
+
+/* Tooltip Container Styling */
+.fc-tooltip {
+  position: fixed; /* Keeps it fixed relative to the viewport for accurate positioning */
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
   font-size: 0.9rem;
   pointer-events: none;
   z-index: 1000;
   white-space: nowrap;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-/* Hide tooltip by default */
-.fc-tooltip.hidden {
-  display: none;
+/* Show Tooltip */
+.fc-tooltip.visible {
+  opacity: 1;
 }
-/* Tooltip styling for event hover details */
-.hover-popup {
-  position: absolute;
-  display: none;
-  z-index: 1000;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-size: 0.9em;
-  color: #333;
-  max-width: 250px;
-  word-wrap: break-word;
+
+/* Optional: Adjust Tooltip for Smaller Screens */
+@media (max-width: 600px) {
+  .fc-tooltip {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
 }
