@@ -20,7 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
     headerToolbar: {
       left: "prev,next today",
       center: "title",
-      right: "dayGridMonth,timeGridWeek,timeGridDay",
+      right: "dayGridMonth,timeGridWeek,timeGridDay,dayGridYear",
+    },
+    views: {
+      dayGridYear: {
+        type: "dayGrid",
+        duration: { years: 1 },
+        buttonText: "Year",
+      },
     },
     dayHeaderFormat: { weekday: "long" },
     events: [],
@@ -36,18 +43,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const { startInput, endInput } = extendedProps;
 
       hoverDetailsEl.innerHTML = `
-          <div style="padding: 10px; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; max-width: 250px;">
-            <strong style="font-size: 1.1em; display: block; margin-bottom: 5px;">${title}</strong>
-            <div style="margin-bottom: 5px;">
-              <strong>Available From:</strong><br>
-              ${formatInputDateTime(startInput)}
+            <div style="padding: 10px; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; max-width: 250px;">
+              <strong style="font-size: 1.1em; display: block; margin-bottom: 5px;">${title}</strong>
+              <div style="margin-bottom: 5px;">
+                <strong>Available From:</strong><br>
+                ${formatInputDateTime(startInput)}
+              </div>
+              <div>
+                <strong>To:</strong><br>
+                ${formatInputDateTime(endInput)}
+              </div>
             </div>
-            <div>
-              <strong>To:</strong><br>
-              ${formatInputDateTime(endInput)}
-            </div>
-          </div>
-        `;
+          `;
 
       hoverDetailsEl.style.display = "block";
 
