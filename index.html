@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instructor Availability App</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase SDK -->
+    <script type="module" src="firebase-config.js"></script>
+  </head>
+  <body>
+    <h1>Instructor Availability</h1>
+
+    <!-- Availability Logging Form -->
+    <form id="availability-form">
+      <label for="name">Instructor Name:</label>
+      <input type="text" id="name" required />
+
+      <label for="date">Available Date:</label>
+      <input type="date" id="date" required />
+
+      <label for="time">Available Time:</label>
+      <input type="time" id="time" required />
+
+      <button type="submit">Log Availability</button>
+    </form>
+
+    <h2>Availability Schedule</h2>
+    <ul id="availability-list"></ul>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
