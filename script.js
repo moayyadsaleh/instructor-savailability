@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
                   font-size: 0.9em; 
                   color: #555;
               ">
-                  <strong>Class Runs:</strong> ${
+                  <strong>Class Total Hours:</strong> ${
                     totalTeachingHours || "N/A"
                   } hours
               </div>
@@ -122,8 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   color: #555;
               ">
                   <strong>Available Teaching Times:</strong>
-                  <div>Before: ${availableBefore}</div>
-                  <div>After: ${availableAfter}</div>
+                  <div>Free to Teach: ${availableBefore}</div>
+                  <div>Free to Teach: ${availableAfter}</div>
               </div>
           </div>
       `;
