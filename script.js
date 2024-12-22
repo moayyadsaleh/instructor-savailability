@@ -122,8 +122,8 @@ document.addEventListener("DOMContentLoaded", () => {
                   color: #555;
               ">
                   <strong>Available Teaching Times:</strong>
-                  <div>Free to Teach: ${availableBefore}</div>
-                  <div>Free to Teach: ${availableAfter}</div>
+                  <div>Free to Teach Before: ${availableBefore}</div>
+                  <div>Free to Teach After: ${availableAfter}</div>
               </div>
           </div>
       `;
