@@ -64,6 +64,16 @@ document.addEventListener("DOMContentLoaded", () => {
         currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
       }
 
+      // Calculate the available times the instructor can teach
+      const availableBefore =
+        startDate.getHours() > 8
+          ? `12:00 AM - ${startDate.getHours()}:00 AM`
+          : "12:00 AM - 8:00 AM";
+      const availableAfter =
+        endDate.getHours() < 22
+          ? `${endDate.getHours()}:00 AM - 10:00 PM`
+          : "10:00 AM - 10:00 PM";
+
       hoverDetailsEl.innerHTML = `
           <div style="
               padding: 10px; 
@@ -106,10 +116,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     startInput
                   )} to ${formatInputDateTime(endInput)}
               </div>
+              <div style="
+                  margin-bottom: 5px; 
+                  font-size: 0.9em; 
+                  color: #555;
+              ">
+                  <strong>Available Teaching Times:</strong>
+                  <div>Before: ${availableBefore}</div>
+                  <div>After: ${availableAfter}</div>
+              </div>
           </div>
       `;
 
       hoverDetailsEl.style.display = "block";
+
       let top = info.jsEvent.clientY + 15;
       let left = info.jsEvent.clientX + 15;
 
