@@ -42,26 +42,74 @@ document.addEventListener("DOMContentLoaded", () => {
       const { title, extendedProps } = info.event;
       const { startInput, endInput, className } = extendedProps;
 
+      // Convert start and end inputs to Date objects
+      const startDate = new Date(startInput);
+      const endDate = new Date(endInput);
+
+      // Calculate total teaching load in hours
+      const startHour = Math.max(startDate.getHours(), 8); // Class starts at 8:00 AM
+      const endHour = Math.min(endDate.getHours(), 22); // Class ends at 10:00 PM
+
+      // Calculate the daily teaching hours
+      const dailyTeachingHours = Math.max(endHour - startHour, 0); // Ensure no negative values
+
+      let totalTeachingHours = 0;
+      let currentDate = new Date(startDate);
+
+      while (currentDate <= endDate) {
+        // Only count hours for valid teaching days and times
+        if (currentDate.getHours() >= 8 && currentDate.getHours() < 22) {
+          totalTeachingHours += dailyTeachingHours;
+        }
+        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      }
+
       hoverDetailsEl.innerHTML = `
-            <div style="padding: 10px; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; max-width: 250px;">
-              <strong style="font-size: 1.1em; display: block; margin-bottom: 5px;">${title}</strong>
-              <div style="margin-bottom: 5px;">
-                <strong>Class:</strong><br>
-                ${className}
+          <div style="
+              padding: 10px; 
+              background-color: #f8f9fa; 
+              border: 1px solid #ccc; 
+              border-radius: 8px; 
+              max-width: 250px; 
+              font-family: Arial, sans-serif;
+          ">
+              <strong style="
+                  font-size: 1.2em; 
+                  display: block; 
+                  margin-bottom: 5px; 
+                  color: #333;
+              ">
+                  ${title} is teaching
+              </strong>
+              <div style="
+                  margin-bottom: 5px; 
+                  font-size: 0.9em; 
+                  color: #555;
+              ">
+                  <strong>Class:</strong> ${className}
               </div>
-              <div>
-                <strong>From:</strong><br>
-                ${formatInputDateTime(startInput)}
+              <div style="
+                  margin-bottom: 5px; 
+                  font-size: 0.9em; 
+                  color: #555;
+              ">
+                  <strong>Class Runs:</strong> ${
+                    totalTeachingHours || "N/A"
+                  } hours
               </div>
-              <div>
-                <strong>To:</strong><br>
-                ${formatInputDateTime(endInput)}
+              <div style="
+                  margin-bottom: 5px; 
+                  font-size: 0.9em; 
+                  color: #555;
+              ">
+                  <strong>Class Time:</strong> From ${formatInputDateTime(
+                    startInput
+                  )} to ${formatInputDateTime(endInput)}
               </div>
-            </div>
-          `;
+          </div>
+      `;
 
       hoverDetailsEl.style.display = "block";
-
       let top = info.jsEvent.clientY + 15;
       let left = info.jsEvent.clientX + 15;
 
@@ -187,4 +235,48 @@ document.addEventListener("DOMContentLoaded", () => {
   function getRandomColor() {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }
+});
+document.getElementById("export-excel-btn").addEventListener("click", () => {
+  const events = calendar.getEvents();
+
+  if (events.length === 0) {
+    alert("No events to export!");
+    return;
+  }
+
+  // Prepare data for Excel
+  const data = [
+    ["Instructor", "Class", "Start Date & Time", "End Date & Time"], // Header row
+  ];
+
+  events.forEach((event) => {
+    const { title, extendedProps, start, end } = event;
+    data.push([
+      title,
+      extendedProps.className || "N/A",
+      formatInputDateTime(start),
+      formatInputDateTime(end),
+    ]);
+  });
+
+  // Convert data to worksheet
+  const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+  // Style the header row (optional)
+  const headerRange = XLSX.utils.decode_range(worksheet["!ref"]);
+  for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
+    const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
+    if (!worksheet[cellAddress]) continue;
+    worksheet[cellAddress].s = {
+      font: { bold: true, color: { rgb: "FFFFFF" } },
+      fill: { fgColor: { rgb: "4CAF50" } }, // Green background for header
+    };
+  }
+
+  // Create a workbook and export it
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Teaching Schedule");
+
+  // Export as Excel file
+  XLSX.writeFile(workbook, "teaching_schedule.xlsx");
 });
