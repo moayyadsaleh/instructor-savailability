@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     headerToolbar: {
       left: "prev,next today",
       center: "title",
-      right: "dayGridMonth,timeGridWeek,timeGridDay,dayGridYear",
+      right: "dayGridMonth,dayGridYear", // Only month & year views
     },
     views: {
       dayGridYear: {
@@ -40,99 +40,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
     eventMouseEnter: (info) => {
       const { title, extendedProps } = info.event;
-      const { startInput, endInput, className } = extendedProps;
+      const { startInput, endInput, className, recurringDays } = extendedProps;
 
-      // Convert start and end inputs to Date objects
-      const startDate = new Date(startInput);
-      const endDate = new Date(endInput);
-
-      // Calculate total teaching load in hours
-      const startHour = Math.max(startDate.getHours(), 8); // Class starts at 8:00 AM
-      const endHour = Math.min(endDate.getHours(), 22); // Class ends at 10:00 PM
-
-      // Calculate the daily teaching hours
-      const dailyTeachingHours = Math.max(endHour - startHour, 0); // Ensure no negative values
-
-      let totalTeachingHours = 0;
-      let currentDate = new Date(startDate);
-
-      while (currentDate <= endDate) {
-        // Only count hours for valid teaching days and times
-        if (currentDate.getHours() >= 8 && currentDate.getHours() < 22) {
-          totalTeachingHours += dailyTeachingHours;
-        }
-        currentDate.setDate(currentDate.getDate() + 1); // Move to the next day
+      // We'll build a "repeats on" line if there's recurringDays
+      let recurringText = "";
+      if (recurringDays && recurringDays.length > 0) {
+        // Convert numeric days to string (0=Sun, 1=Mon, etc.)
+        const dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const selectedDayNames = recurringDays.map((d) => dayNames[d]);
+        recurringText = `
+          <div style="margin-top: 5px;">
+            <strong>Repeats on:</strong><br>
+            ${selectedDayNames.join(", ")}
+          </div>`;
       }
 
-      // Calculate the available times the instructor can teach
-      const availableBefore =
-        startDate.getHours() > 8
-          ? `12:00 AM - ${startDate.getHours()}:00 AM`
-          : "12:00 AM - 8:00 AM";
-      const availableAfter =
-        endDate.getHours() < 22
-          ? `${endDate.getHours()}:00 AM - 10:00 PM`
-          : "10:00 AM - 10:00 PM";
-
       hoverDetailsEl.innerHTML = `
-          <div style="
-              padding: 10px; 
-              background-color: #f8f9fa; 
-              border: 1px solid #ccc; 
-              border-radius: 8px; 
-              max-width: 250px; 
-              font-family: Arial, sans-serif;
-          ">
-              <strong style="
-                  font-size: 1.2em; 
-                  display: block; 
-                  margin-bottom: 5px; 
-                  color: #333;
-              ">
-                  ${title} is teaching
-              </strong>
-              <div style="
-                  margin-bottom: 5px; 
-                  font-size: 0.9em; 
-                  color: #555;
-              ">
-                  <strong>Class:</strong> ${className}
-              </div>
-              <div style="
-                  margin-bottom: 5px; 
-                  font-size: 0.9em; 
-                  color: #555;
-              ">
-                  <strong>Class Total Hours:</strong> ${
-                    totalTeachingHours || "N/A"
-                  } hours
-              </div>
-              <div style="
-                  margin-bottom: 5px; 
-                  font-size: 0.9em; 
-                  color: #555;
-              ">
-                  <strong>Class Time:</strong> From ${formatInputDateTime(
-                    startInput
-                  )} to ${formatInputDateTime(endInput)}
-              </div>
-              <div style="
-                  margin-bottom: 5px; 
-                  font-size: 0.9em; 
-                  color: #555;
-              ">
-                  <strong>Available Teaching Times:</strong>
-                  <div>Free to Teach Before: ${availableBefore}</div>
-                  <div>Free to Teach After: ${availableAfter}</div>
-              </div>
+        <div style="padding: 10px; background-color: #f8f9fa; border: 1px solid #ccc; border-radius: 8px; max-width: 250px;">
+          <strong style="font-size: 1.1em; display: block; margin-bottom: 5px;">${title}</strong>
+          <div style="margin-bottom: 5px;">
+            <strong>Class:</strong><br>
+            ${className}
           </div>
+          <div>
+            <strong>From:</strong><br>
+            ${formatInputDateTime(startInput)}
+          </div>
+          <div>
+            <strong>To:</strong><br>
+            ${formatInputDateTime(endInput)}
+          </div>
+          ${recurringText}
+        </div>
       `;
 
       hoverDetailsEl.style.display = "block";
 
       let top = info.jsEvent.clientY + 15;
       let left = info.jsEvent.clientX + 15;
-
       const tooltipHeight = hoverDetailsEl.offsetHeight;
       const tooltipWidth = hoverDetailsEl.offsetWidth;
 
@@ -160,58 +113,69 @@ document.addEventListener("DOMContentLoaded", () => {
   // Listen for database changes and update events
   onSnapshot(collection(db, "teaching-schedule"), (snapshot) => {
     calendar.removeAllEvents();
-    snapshot.forEach((doc) => {
-      const data = doc.data();
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
 
       calendar.addEvent({
-        id: doc.id,
+        id: docSnap.id,
         title: data.instructor,
         start: data.start,
         end: data.end,
         color: instructorColors[data.instructor] || getRandomColor(),
         extendedProps: {
-          className: data.className, // Include class name in extended properties
+          className: data.className,
           startInput: data.start,
           endInput: data.end,
+          recurringDays: data.recurringDays || [], // We'll store this as an array
         },
       });
     });
   });
 
-  // Adding teaching hours (classes)
+  // Single form submission (one event) with potential "recurringDays" extended property
   document
     .getElementById("add-class-btn")
     .addEventListener("click", async () => {
       const instructorName = document.getElementById("instructor-name").value;
       const className = document.getElementById("class-name").value;
-      const start = document.getElementById("class-start").value;
-      const end = document.getElementById("class-end").value;
+      const startVal = document.getElementById("class-start").value;
+      const endVal = document.getElementById("class-end").value;
 
-      if (instructorName && className && start && end) {
-        if (new Date(start) >= new Date(end)) {
-          alert("End time must be after start time.");
-          return;
-        }
+      // Gather days-of-week (if any)
+      const recDayCheckboxes = document.querySelectorAll(".rec-days:checked");
+      const daysOfWeek = Array.from(recDayCheckboxes).map((cb) =>
+        parseInt(cb.value)
+      );
 
-        try {
-          await addDoc(collection(db, "teaching-schedule"), {
-            instructor: instructorName,
-            className: className,
-            start: start,
-            end: end,
-            startInput: start,
-            endInput: end,
-          });
-          alert("Class added successfully!");
-        } catch (error) {
-          console.error("Error adding class:", error);
-          alert("Failed to add class.");
-        }
-      } else {
+      // Validation
+      if (!instructorName || !className || !startVal || !endVal) {
         alert("Please fill out all fields.");
+        return;
+      }
+      if (new Date(startVal) >= new Date(endVal)) {
+        alert("End time must be after start time.");
+        return;
+      }
+
+      // Create a single doc in Firestore with recurringDays
+      try {
+        await addDoc(collection(db, "teaching-schedule"), {
+          instructor: instructorName,
+          className: className,
+          start: startVal,
+          end: endVal,
+          startInput: startVal,
+          endInput: endVal,
+          recurringDays: daysOfWeek, // store array of numeric days
+        });
+        alert("Event added successfully!");
+      } catch (error) {
+        console.error("Error adding class:", error);
+        alert("Failed to add class.");
       }
     });
 
+  // Utility Functions
   function addFullDatesToHeaders() {
     const dayHeaderCells = document.querySelectorAll(".fc-col-header-cell");
     dayHeaderCells.forEach((cell) => {
@@ -255,48 +219,4 @@ document.addEventListener("DOMContentLoaded", () => {
   function getRandomColor() {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }
-});
-document.getElementById("export-excel-btn").addEventListener("click", () => {
-  const events = calendar.getEvents();
-
-  if (events.length === 0) {
-    alert("No events to export!");
-    return;
-  }
-
-  // Prepare data for Excel
-  const data = [
-    ["Instructor", "Class", "Start Date & Time", "End Date & Time"], // Header row
-  ];
-
-  events.forEach((event) => {
-    const { title, extendedProps, start, end } = event;
-    data.push([
-      title,
-      extendedProps.className || "N/A",
-      formatInputDateTime(start),
-      formatInputDateTime(end),
-    ]);
-  });
-
-  // Convert data to worksheet
-  const worksheet = XLSX.utils.aoa_to_sheet(data);
-
-  // Style the header row (optional)
-  const headerRange = XLSX.utils.decode_range(worksheet["!ref"]);
-  for (let col = headerRange.s.c; col <= headerRange.e.c; col++) {
-    const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-    if (!worksheet[cellAddress]) continue;
-    worksheet[cellAddress].s = {
-      font: { bold: true, color: { rgb: "FFFFFF" } },
-      fill: { fgColor: { rgb: "4CAF50" } }, // Green background for header
-    };
-  }
-
-  // Create a workbook and export it
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Teaching Schedule");
-
-  // Export as Excel file
-  XLSX.writeFile(workbook, "teaching_schedule.xlsx");
 });

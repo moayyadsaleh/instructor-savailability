@@ -9,7 +9,7 @@ body {
 
 /* Container for the entire app */
 .container {
-  max-width: 1200px;
+  max-width: 1300px; /* Slightly larger max-width for a roomier layout */
   margin: 2rem auto;
   padding: 2rem;
   background-color: #fff;
@@ -22,6 +22,7 @@ h1 {
   font-size: 2rem;
   color: #0078d4;
   text-align: center;
+  margin-bottom: 1rem;
 }
 
 h2 {
@@ -43,8 +44,10 @@ label {
   display: block;
   margin: 0.5rem 0 0.2rem;
   font-weight: 600;
+  color: #2c3e50; /* Consistent color across labels */
 }
 
+/* Inputs and selects */
 input,
 select {
   width: 100%;
@@ -53,6 +56,13 @@ select {
   border-radius: 6px;
   font-size: 1rem;
   margin-bottom: 1rem;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #0078d4; /* Highlight input on focus */
 }
 
 /* Button styling */
@@ -64,11 +74,17 @@ button {
   border-radius: 6px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
   background-color: #005a9e;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0px 0px 0px 3px rgba(0, 120, 212, 0.3);
 }
 
 /* Calendar container styles */
@@ -76,8 +92,9 @@ button:hover {
   margin-top: 2rem;
   background-color: #fff;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 1rem 2rem; /* Added some extra padding horizontally */
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  min-height: 700px; /* Make the calendar a bit taller by default */
 }
 
 /* Hover details popup */
@@ -106,16 +123,24 @@ button:hover {
   border-color: #005a9e;
   color: #fff;
   border-radius: 4px;
+  transition: transform 0.1s ease;
+}
+
+.fc-event:hover {
+  transform: scale(1.02);
 }
 
 .fc-button-primary {
   background-color: #0078d4;
   border: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .fc-button-primary:hover {
   background-color: #005a9e;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 /* Tooltip styling for event hover details */
 .hover-popup {
   position: fixed;
@@ -157,4 +182,70 @@ button:hover {
     font-size: 0.8rem;
     padding: 6px 10px;
   }
+}
+
+/************************************************************
+ * Recurring Events Styling
+ ************************************************************/
+/* We assume you may still have elements referencing recurring events. */
+.form-section h2 i {
+  margin-right: 6px;
+}
+
+/* Recurring form inputs & labels, if used */
+.form-section input[type="text"],
+.form-section input[type="date"],
+.form-section input[type="time"] {
+  display: block;
+  width: 220px;
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.form-section label {
+  font-weight: bold;
+  margin-top: 10px;
+  display: block;
+  color: #2c3e50;
+}
+
+/* Day-of-week checkboxes container */
+.form-section > div {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Checkbox labels inline, spaced out */
+.form-section > div label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  font-weight: normal; /* so it doesn't conflict with the bold for the main labels */
+}
+
+/* Increase checkbox size slightly for visibility */
+.rec-days {
+  transform: scale(1.2);
+  margin-right: 5px;
+}
+
+/* "Add Recurring" button, matching style of "Add Class" */
+#add-recurring-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#add-recurring-btn:hover {
+  background-color: #1f6ea8;
 }
