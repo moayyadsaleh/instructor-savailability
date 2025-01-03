@@ -60,6 +60,18 @@
       .toggle-btn:hover {
         background-color: #1f6ea8;
       }
+
+      /* Simple styling for the search section */
+      .search-section {
+        margin-top: 30px;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+      }
+
+      .available-teachers-list {
+        margin: 15px 0;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -76,22 +88,29 @@
         <h2><i class="fas fa-book"></i> How to Use</h2>
         <p>
           1.
-          <strong><i class="fas fa-plus-circle"></i> Add a Class:</strong>
-          Enter the instructor's name, the class name, and select a start and
-          end date/time. Click
-          <strong>"Add Class"</strong>. The class schedule will appear on the
-          calendar immediately.
+          <strong><i class="fas fa-plus-circle"></i> Add a Class:</strong> Enter
+          the instructor's name, the class name, and set the start and end
+          date/time. If the class recurs, select the recurrence pattern (e.g.,
+          weekly or monthly). Click <strong>"Add Class"</strong>. The class will
+          instantly appear on the calendar.
         </p>
         <p>
-          2. <strong><i class="fas fa-eye"></i> View Details:</strong> Hover
-          over a class slot to see more details in a pop-up.
+          2. <strong><i class="fas fa-eye"></i> View Class Details:</strong>
+          Hover over a class on the calendar to see all the details, including
+          instructor name, class title, and date/time.
         </p>
         <p>
-          3. <strong><i class="fas fa-trash"></i> Delete a Class:</strong> Click
-          on a class slot and confirm the deletion to remove it from the
-          calendar.
+          3. <strong><i class="fas fa-trash"></i> Remove a Class:</strong>
+          Click on a class entry in the calendar, then confirm the deletion to
+          remove it.
+        </p>
+        <p>
+          You can add as many classes and recurrences as you want. Each class
+          with unique dates or times must be entered separately to ensure
+          accurate scheduling.
         </p>
       </div>
+
       <div class="form-section">
         <h2><i class="fas fa-user-plus"></i> Add Class</h2>
 
@@ -125,9 +144,27 @@
         </button>
       </div>
 
+      <!-- NEW: Search for Available Teachers Section -->
+      <div class="search-section">
+        <h2><i class="fas fa-search"></i> Search Available Teachers</h2>
+        <label for="search-start">Start Date & Time:</label>
+        <input type="datetime-local" id="search-start" step="60" />
+
+        <label for="search-end">End Date & Time:</label>
+        <input type="datetime-local" id="search-end" step="60" />
+
+        <button id="search-available-btn">
+          <i class="fas fa-search"></i> Search
+        </button>
+
+        <div id="available-teachers" class="available-teachers-list"></div>
+      </div>
+
       <div id="calendar"></div>
       <div id="hover-details" class="hover-popup"></div>
     </div>
+
+    <!-- FullCalendar & Firestore Scripts -->
     <link
       href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css"
       rel="stylesheet"
@@ -135,12 +172,12 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.8/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar-year-view@latest/dist/index.global.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="script.js"></script>
 
     <script>
+      // Show/Hide "How to Use" instructions
       document
         .getElementById("toggle-instructions-btn")
         .addEventListener("click", () => {
@@ -160,8 +197,7 @@
               '<i class="fas fa-info-circle"></i> Show Instructions';
           }
         });
-    </script>
-    <script>
+
       // Submit form when pressing Enter in any input field
       document.querySelectorAll(".form-section input").forEach((input) => {
         input.addEventListener("keypress", (event) => {

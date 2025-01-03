@@ -7,6 +7,9 @@ import {
   onSnapshot,
 } from "./firebase-config.js";
 
+let allSchedules = []; // Will hold all events from Firestore
+let calendar;
+
 document.addEventListener("DOMContentLoaded", () => {
   const calendarEl = document.getElementById("calendar");
   const hoverDetailsEl = document.createElement("div");
@@ -14,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   hoverDetailsEl.className = "hover-popup";
   document.body.appendChild(hoverDetailsEl); // Append tooltip to body
 
-  const calendar = new FullCalendar.Calendar(calendarEl, {
+  calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: "dayGridMonth",
     timeZone: "America/New_York",
     headerToolbar: {
@@ -30,6 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     },
     dayHeaderFormat: { weekday: "long" },
+
+    // Force 24-hour time display for events
+    eventTimeFormat: {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // 24-hour format
+    },
+
     events: [],
 
     eventClick: async (info) => {
@@ -113,10 +124,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Listen for database changes and update events
   onSnapshot(collection(db, "teaching-schedule"), (snapshot) => {
     calendar.removeAllEvents();
+    allSchedules = []; // Reset our local array
+
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
-
-      calendar.addEvent({
+      const eventObj = {
         id: docSnap.id,
         title: data.instructor,
         start: data.start,
@@ -126,13 +138,23 @@ document.addEventListener("DOMContentLoaded", () => {
           className: data.className,
           startInput: data.start,
           endInput: data.end,
-          recurringDays: data.recurringDays || [], // We'll store this as an array
+          recurringDays: data.recurringDays || [],
         },
+        allDay: false, // Keep this for accurate scheduling
+      };
+      calendar.addEvent(eventObj);
+
+      // Store for availability lookups
+      allSchedules.push({
+        id: docSnap.id,
+        instructor: data.instructor,
+        start: data.start,
+        end: data.end,
       });
     });
   });
 
-  // Single form submission (one event) with potential "recurringDays" extended property
+  // Add a single class entry (with optional recurring days)
   document
     .getElementById("add-class-btn")
     .addEventListener("click", async () => {
@@ -141,13 +163,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const startVal = document.getElementById("class-start").value;
       const endVal = document.getElementById("class-end").value;
 
-      // Gather days-of-week (if any)
       const recDayCheckboxes = document.querySelectorAll(".rec-days:checked");
       const daysOfWeek = Array.from(recDayCheckboxes).map((cb) =>
         parseInt(cb.value)
       );
 
-      // Validation
+      // Basic validation
       if (!instructorName || !className || !startVal || !endVal) {
         alert("Please fill out all fields.");
         return;
@@ -157,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Create a single doc in Firestore with recurringDays
       try {
         await addDoc(collection(db, "teaching-schedule"), {
           instructor: instructorName,
@@ -166,7 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
           end: endVal,
           startInput: startVal,
           endInput: endVal,
-          recurringDays: daysOfWeek, // store array of numeric days
+          recurringDays: daysOfWeek,
         });
         alert("Event added successfully!");
       } catch (error) {
@@ -175,7 +195,60 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-  // Utility Functions
+  // NEW: Search available teachers
+  document
+    .getElementById("search-available-btn")
+    .addEventListener("click", searchAvailableTeachers);
+
+  function searchAvailableTeachers() {
+    const startVal = document.getElementById("search-start").value;
+    const endVal = document.getElementById("search-end").value;
+    const resultEl = document.getElementById("available-teachers");
+
+    // Validate
+    if (!startVal || !endVal) {
+      alert("Please provide both start and end times.");
+      return;
+    }
+    const searchStart = new Date(startVal);
+    const searchEnd = new Date(endVal);
+    if (searchStart >= searchEnd) {
+      alert("End time must be after start time.");
+      return;
+    }
+
+    // Build a set of all instructors present in the schedule
+    const allInstructors = new Set(allSchedules.map((ev) => ev.instructor));
+
+    // Now we figure out who is busy during searchStart...searchEnd
+    // Overlap condition: (searchStart < existingEnd) and (searchEnd > existingStart)
+    const busyInstructors = new Set();
+    allSchedules.forEach((ev) => {
+      const evStart = new Date(ev.start);
+      const evEnd = new Date(ev.end);
+
+      const isOverlap = searchStart < evEnd && searchEnd > evStart;
+      if (isOverlap) {
+        busyInstructors.add(ev.instructor);
+      }
+    });
+
+    // The available instructors are those not in 'busyInstructors'
+    const availableInstructors = [...allInstructors].filter(
+      (instr) => !busyInstructors.has(instr)
+    );
+
+    // Show results
+    if (availableInstructors.length === 0) {
+      resultEl.textContent = "No available instructors for that time range.";
+    } else {
+      resultEl.textContent = `Available Instructors: ${availableInstructors.join(
+        ", "
+      )}`;
+    }
+  }
+
+  // Utility functions
   function addFullDatesToHeaders() {
     const dayHeaderCells = document.querySelectorAll(".fc-col-header-cell");
     dayHeaderCells.forEach((cell) => {
@@ -196,6 +269,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // UPDATED for 24-hour format (hour12: false)
   function formatInputDateTime(input) {
     const parsedDate = new Date(input);
     if (isNaN(parsedDate)) return input;
@@ -205,10 +279,11 @@ document.addEventListener("DOMContentLoaded", () => {
       month: "2-digit",
       day: "2-digit",
     });
+    // 24-hour time
     const timePart = parsedDate.toLocaleTimeString("en-US", {
-      hour: "numeric",
+      hour: "2-digit",
       minute: "2-digit",
-      hour12: true,
+      hour12: false,
     });
 
     return `${datePart}, ${timePart}`;
